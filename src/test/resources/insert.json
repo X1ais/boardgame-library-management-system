@@ -1,0 +1,36 @@
+{
+	"bibName": "Root",
+	"minNumOfPlayers": 2,
+	"maxNumOfPlayers": 4,
+	"minAge": 10,
+	"playtime": 90,
+	"complexity": 3.8,
+	"edition": "First",
+	"publishers": [
+		{
+    		"publisherName": "Leder Games"
+    	}
+    ],
+    "categories": [
+    	{
+  			"categoryName": "Animals"
+    	},
+    	{
+    		"categoryName": "Fantasy"
+    	},
+    	{
+    		"categoryName": "Negotiation"
+    	},
+    	{
+    		"categoryName": "Territory Building"
+    	},
+    	{
+    		"categoryName": "Wargame"
+    	},
+    	{
+    		"categoryName": "Asymmetic"
+    	}
+    	
+    ]
+}
+
