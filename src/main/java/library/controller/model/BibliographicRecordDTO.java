@@ -140,15 +140,12 @@ public class BibliographicRecordDTO {
 		private Long designerId;
 		private String firstName;
 		private String lastName;
-		private AddressDTO address;
 		
 		public DesignerDTO(Designer designer) {
 			
 			this.designerId = designer.getDesignerId();
 			this.firstName = designer.getFirstName();
 			this.lastName = designer.getLastName();
-			this.address = new AddressDTO(designer.getAddress());
-			
 		}
 		
 		public Designer toDesigner() {
@@ -170,15 +167,12 @@ public class BibliographicRecordDTO {
 		private Long artistId;
 		private String firstName;
 		private String lastName;
-		private AddressDTO address;
 		
 		public ArtistDTO(Artist artist) {
 			
 			this.artistId = artist.getArtistId();
 			this.firstName = artist.getFirstName();
 			this.lastName = artist.getLastName();
-			this.address = new AddressDTO(artist.getAddress());
-			
 		}
 		
 		public Artist toArtist() {
@@ -190,7 +184,6 @@ public class BibliographicRecordDTO {
 			artist.setLastName(lastName);
 			
 			return artist;
-			
 		}
 	}
 

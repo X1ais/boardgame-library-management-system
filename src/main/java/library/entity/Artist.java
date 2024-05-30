@@ -26,10 +26,6 @@ public class Artist {
 	private String firstName;
 	private String lastName;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id")
-	private Address address = new Address();
-	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToMany(mappedBy = "artists")

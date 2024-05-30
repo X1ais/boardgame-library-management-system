@@ -23,8 +23,8 @@ public class Borrower {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long borrowerId;
 	
-	private String fName;
-	private String lName;
+	private String firstName;
+	private String lastName;
 	private String phone;
 	private int itemLimit;
 	
@@ -34,8 +34,8 @@ public class Borrower {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToOne(mappedBy = "borrower")
-	private Loan loan;
+	@OneToMany(mappedBy = "borrower", cascade = CascadeType.PERSIST)
+	private Set<Loan> loans = new HashSet<>();
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude

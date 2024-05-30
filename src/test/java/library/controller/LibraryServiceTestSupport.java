@@ -53,6 +53,7 @@ public class LibraryServiceTestSupport {
 			"Monopoly",
 			"Board game room",
 			true,
+			0,
 			14
 			);
 	
@@ -61,6 +62,7 @@ public class LibraryServiceTestSupport {
 			"Chess",
 			"Front Desk",
 			true,
+			0,
 			28
 			);
 	

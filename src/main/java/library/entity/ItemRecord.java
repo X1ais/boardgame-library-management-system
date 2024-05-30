@@ -34,7 +34,7 @@ public class ItemRecord {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToOne(mappedBy = "item")
+	@OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
 	private Loan loanRecord;
 
 }

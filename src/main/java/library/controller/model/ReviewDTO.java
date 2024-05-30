@@ -11,6 +11,8 @@ public class ReviewDTO {
 	private Long reviewId;
 	private int rating;
 	private String reviewBody;
+	private BibliographicRecordDTO bibRecord;
+	private BorrowerDTO borrower;
 	
 	public ReviewDTO(Review review) {
 		this.reviewId = review.getReviewId();

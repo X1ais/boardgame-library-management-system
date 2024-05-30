@@ -24,11 +24,12 @@ public class ItemRecordDTO {
 		this.checkoutPeriod = item.getCheckoutPeriod();
 	}
 	
-	public ItemRecordDTO(Long itemId, String itemName, String location, boolean available, int checkoutPeriod) {
+	public ItemRecordDTO(Long itemId, String itemName, String location, boolean available, int checkouts, int checkoutPeriod) {
 		this.setItemId(itemId);
 		this.setItemName(itemName);
 		this.setLocation(location);
 		this.setAvailable(available);
+		this.setCheckouts(checkouts);
 		this.setCheckoutPeriod(checkoutPeriod);
 	}
 	

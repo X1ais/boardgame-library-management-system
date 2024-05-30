@@ -13,15 +13,18 @@ import library.controller.model.BibliographicRecordDTO.ArtistDTO;
 import library.controller.model.BibliographicRecordDTO.CategoryDTO;
 import library.controller.model.BibliographicRecordDTO.DesignerDTO;
 import library.controller.model.BibliographicRecordDTO.PublisherDTO;
+import library.controller.model.BorrowerDTO;
 import library.controller.model.ItemRecordDTO;
 import library.dao.ArtistDao;
 import library.dao.BibliographicRecordDao;
+import library.dao.BorrowerDao;
 import library.dao.CategoryDao;
 import library.dao.DesignerDao;
 import library.dao.ItemRecordDao;
 import library.dao.PublisherDao;
 import library.entity.Artist;
 import library.entity.BibliographicRecord;
+import library.entity.Borrower;
 import library.entity.Category;
 import library.entity.Designer;
 import library.entity.ItemRecord;
@@ -47,6 +50,9 @@ public class LibraryService {
 	
 	@Autowired
 	private ItemRecordDao itemRecordDao;
+	
+	@Autowired
+	private BorrowerDao borrowerDao;
 
 	
 	
@@ -61,6 +67,13 @@ public class LibraryService {
  		copyEntityFields(bibRecord, bibRecordDTO);
 		
 		return new BibliographicRecordDTO(bibRecordDao.save(bibRecord));
+	}
+
+	public Long findBibRecordId(Long bibId) {
+		
+		BibliographicRecord bibRecord = findBibRecordById(bibId);
+		
+		return bibRecord.getBibId();
 	}
 
 	@Transactional(readOnly = true)
@@ -113,6 +126,17 @@ public class LibraryService {
 		
 		return new ItemRecordDTO(itemRecordDao.save(itemRecord));
 	}
+
+	@Transactional(readOnly = true)
+	public List<ItemRecordDTO> retrieveAllItemsByBibId(Long bibId) {
+		
+		BibliographicRecord bibRecord = findBibRecordById(bibId);
+		
+		return bibRecord.getItems()
+				.stream()
+				.map(ItemRecordDTO::new)
+				.toList();
+	}
 	
 	@Transactional(readOnly = true)
 	public ItemRecordDTO retrieveItemRecordById(Long itemId) {
@@ -137,7 +161,42 @@ public class LibraryService {
 	
 	
 	
+	/*
+	 * Start of the transactional service methods for the borrower records.
+	 */
+
+	@Transactional(readOnly = false)
+	public BorrowerDTO saveBorrower(BorrowerDTO borrowerDTO) {
+		
+		Borrower borrower = borrowerDTO.toBorrower();
+		
+		return new BorrowerDTO(borrowerDao.save(borrower));
+	}
+
+	@Transactional(readOnly = true)
+	public List<BorrowerDTO> retrieveAllBorrowers() {
+
+		return borrowerDao.findAll()
+				.stream()
+				.map(BorrowerDTO::new)
+				.toList();
+	}
+
+	@Transactional(readOnly = true)
+	public BorrowerDTO retrieveBorrowerById(Long borrowerId) {
+
+		return new BorrowerDTO(findBorrowerById(borrowerId));
+	}
+
+	@Transactional(readOnly = false)
+	public void deleteBorrower(Long borrowerId) {
+
+		borrowerDao.delete(findBorrowerById(borrowerId));	
+	}
 	
+	
+	
+
 	private void copyEntityFields(BibliographicRecord bibRecord, BibliographicRecordDTO bibRecordDTO) {
 
 		for (PublisherDTO publisherData : bibRecordDTO.getPublishers()) {
@@ -241,6 +300,11 @@ public class LibraryService {
 	private ItemRecord findItemRecordById(Long itemId) {
 
 		return itemRecordDao.findById(itemId).orElseThrow(() -> new NoSuchElementException("No such item record with ID=" + itemId + " was found."));
+	}
+	
+	private Borrower findBorrowerById(Long borrowerId) {
+
+		return borrowerDao.findById(borrowerId).orElseThrow(() -> new NoSuchElementException("No such borrower record with ID=" + borrowerId + " was found."));
 	}
 	
 

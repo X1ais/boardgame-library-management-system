@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import library.controller.model.BibliographicRecordDTO;
+import library.controller.model.BorrowerDTO;
 import library.controller.model.ItemRecordDTO;
 import library.service.LibraryService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,10 @@ public class LibraryController {
 	
 	@Autowired
 	private LibraryService libraryService;
+	
+	/*
+	 * HTTP requests for bib records
+	 */
 	
 	@PostMapping("/bib")
 	@ResponseStatus(code = HttpStatus.CREATED)
@@ -60,7 +66,9 @@ public class LibraryController {
 		
 		log.info("Updating bibliographic record with ID={}.", bibId);
 		
-		bibRecordDTO.setBibId(bibId);
+		bibRecordDTO.setBibId(
+				libraryService.findBibRecordId(bibId));
+		
 		return libraryService.saveBibRecord(bibRecordDTO);
 		
 	}
@@ -77,9 +85,13 @@ public class LibraryController {
 		
 	}
 	
-	@PostMapping("/item/bibId={bibId}")
+	/*
+	 * HTTP requests for item records
+	 */
+	
+	@PostMapping("/item")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public ItemRecordDTO createItemRecord(@PathVariable Long bibId, @RequestBody ItemRecordDTO itemRecordDTO) {
+	public ItemRecordDTO createItemRecord(@RequestParam Long bibId, @RequestBody ItemRecordDTO itemRecordDTO) {
 		
 		log.info("Creating an item record for bib record with ID={}.", bibId);
 		
@@ -103,6 +115,14 @@ public class LibraryController {
 		return libraryService.retrieveItemRecordById(itemId);
 	}
 	
+	@GetMapping("/bib/items")
+	public List<ItemRecordDTO> getAllItemsByBibId(@RequestParam Long bibId) {
+		
+		log.info("Fetching all items records attached to bib record with ID={}", bibId);
+		
+		return libraryService.retrieveAllItemsByBibId(bibId);
+	}
+	
 	@PutMapping("/item/{itemId}")
 	public ItemRecordDTO updateItemRecord(@PathVariable Long itemId, @RequestBody ItemRecordDTO itemRecordDTO) {
 		
@@ -122,4 +142,60 @@ public class LibraryController {
 		String message = "Successfully deleted item record with ID=" + itemId + ".";
 		return message;
 	}
+	
+	/*
+	 * HTTP requests for Borrower records
+	 */
+	
+	@PostMapping("/borrower")
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public BorrowerDTO createBorrower(@RequestBody BorrowerDTO borrowerDTO) {
+		
+		log.info("Creating new borrower record.");
+		
+		return libraryService.saveBorrower(borrowerDTO);
+	}
+	
+	@GetMapping("/borrower")
+	public List<BorrowerDTO> getAllBorrowers() {
+		
+		log.info("Fetching all borrowers.");
+		
+		return libraryService.retrieveAllBorrowers();
+	}
+	
+	@GetMapping("/borrower/{borrowerId}")
+	public BorrowerDTO getBorrowerById(@PathVariable Long borrowerId) {
+		
+		log.info("Fetching borrower with ID={}", borrowerId);
+		
+		return libraryService.retrieveBorrowerById(borrowerId);
+	}	
+	
+	@PutMapping("/borrower/{borrowerId}")
+	public BorrowerDTO updateItemRecord(@PathVariable Long borrowerId, @RequestBody BorrowerDTO borrowerDTO) {
+		
+		log.info("Updating borrower record with ID={}.", borrowerId);
+		
+		borrowerDTO.setBorrowerId(borrowerId);
+		return libraryService.saveBorrower(borrowerDTO);
+	}
+	
+	@DeleteMapping("/borrower/{borrowerId}")
+	public String deleteBorrowerById(@PathVariable Long borrowerId) {
+		
+		log.info("Deleting borrower with ID={}", borrowerId);
+		
+		libraryService.deleteBorrower(borrowerId);
+		
+		String message = "Successfully deleted borrower record with ID=" + borrowerId + ".";
+		return message;
+	}
+	
+	/*
+	 * HTTP requests for Borrower records
+	 */
+	
+
+	
 }

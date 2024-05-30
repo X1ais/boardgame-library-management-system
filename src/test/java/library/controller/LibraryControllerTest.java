@@ -34,7 +34,7 @@ class LibraryControllerTest extends LibraryServiceTestSupport {
 		
 		// And: only one row is in the table.
 		assertThat(rowsInBibTable()).isOne();
-		
+
 	}
 
 	@Test
@@ -114,7 +114,6 @@ class LibraryControllerTest extends LibraryServiceTestSupport {
 		
 		// Then: the expected record is stored in the item table
 		assertThat(actual).isEqualTo(expected);
-				
 	}
 
 //	@Test
