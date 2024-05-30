@@ -110,7 +110,7 @@ class LibraryControllerTest extends LibraryServiceTestSupport {
 		ItemRecordDTO expected = buildInsertItemRecord(1);
 		
 		// When: the item record is created
-		ItemRecordDTO actual = insertItemRecord(requestBib.getBibId(), request);
+		ItemRecordDTO actual = insertItemRecord(1L, request);
 		
 		// Then: the expected record is stored in the item table
 		assertThat(actual).isEqualTo(expected);

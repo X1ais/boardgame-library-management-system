@@ -36,5 +36,9 @@ public class ItemRecord {
 	@ToString.Exclude
 	@OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
 	private Loan loanRecord;
+	
+	public void incrementCheckouts() {
+		checkouts += 1;
+	}
 
 }

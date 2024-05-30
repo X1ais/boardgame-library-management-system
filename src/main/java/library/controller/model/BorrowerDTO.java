@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import library.entity.Borrower;
-import library.entity.Loan;
 import library.entity.Review;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,6 @@ private Long borrowerId;
 	private String phone;
 	private int itemLimit;
 	private AddressDTO address;
-	private Set<LoanDTO> loans;
 	private Set<ReviewDTO> reviews = new HashSet<>();
 	
 	public BorrowerDTO(Borrower borrower) {
@@ -31,10 +29,6 @@ private Long borrowerId;
 		this.phone = borrower.getPhone();
 		this.itemLimit = borrower.getItemLimit();
 		this.address = new AddressDTO(borrower.getAddress());
-		
-		for(Loan loan : borrower.getLoans()) {
-			this.loans.add(new LoanDTO(loan));
-		}
 		
 		for(Review review : borrower.getReviews()) {
 			this.reviews.add(new ReviewDTO(review));
@@ -52,10 +46,6 @@ private Long borrowerId;
 		borrower.setPhone(phone);
 		borrower.setItemLimit(itemLimit);
 		borrower.setAddress(address.toAddress());
-		
-		for(LoanDTO loan : loans) {
-			borrower.getLoans().add(loan.toLoan());
-		}
 		
 		return borrower;
 	}

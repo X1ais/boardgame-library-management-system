@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import library.controller.model.BibliographicRecordDTO;
 import library.controller.model.BorrowerDTO;
 import library.controller.model.ItemRecordDTO;
+import library.controller.model.LoanDTO;
 import library.service.LibraryService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -193,9 +194,27 @@ public class LibraryController {
 	}
 	
 	/*
-	 * HTTP requests for Borrower records
+	 * HTTP requests for Loan records
 	 */
 	
-
+	@PostMapping("/loan")
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public LoanDTO createLoanRecord(@RequestBody LoanDTO loanDTO) {
+		
+		log.info("Creating loan record.");
+		
+		return libraryService.saveLoanRecord(loanDTO);
+	}
+	
+	@DeleteMapping("/loan/{loanId}")
+	public String deleteLoanRecord(@PathVariable Long loanId) {
+		
+		log.info("Deleting loan record with ID={}", loanId);
+		
+		libraryService.deleteLoan(loanId);
+		
+		String message = "Successfully deleted loan record with ID=" + loanId + ".";
+		return message;
+	}
 	
 }

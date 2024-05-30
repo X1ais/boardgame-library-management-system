@@ -22,7 +22,7 @@ public class Loan {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long loanId;
 	
-	private LocalDate checkoutDate;
+	private LocalDate checkoutDate = LocalDate.now();
 	private LocalDate returnDate;
 	
 	@EqualsAndHashCode.Exclude

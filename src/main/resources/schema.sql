@@ -50,7 +50,7 @@ CREATE TABLE item_record (
 	checkouts INT,
 	checkout_period INT,
 	PRIMARY KEY (item_id),
-	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id) ON DELETE CASCADE
+	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id) ON DELETE CASCADE,
 );
 
 CREATE TABLE borrower (
@@ -79,11 +79,11 @@ CREATE TABLE loan (
 	loan_id INT NOT NULL AUTO_INCREMENT,
 	item_id INT NOT NULL,
 	borrower_id INT NOT NULL,
-	checkout_date DATE,
+	checkout_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 	return_date DATE,
 	PRIMARY KEY (loan_id),
-	FOREIGN KEY (item_id) REFERENCES item_record (item_id),
-	FOREIGN KEY (borrower_id) REFERENCES borrower (borrower_id)
+	FOREIGN KEY (item_id) REFERENCES item_record (item_id) ON DELETE CASCADE,
+	FOREIGN KEY (borrower_id) REFERENCES borrower (borrower_id) ON DELETE CASCADE
 );
 
 CREATE TABLE artist (
