@@ -1,5 +1,6 @@
 package library.service;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -13,9 +14,10 @@ import library.controller.model.BibliographicRecordDTO.ArtistDTO;
 import library.controller.model.BibliographicRecordDTO.CategoryDTO;
 import library.controller.model.BibliographicRecordDTO.DesignerDTO;
 import library.controller.model.BibliographicRecordDTO.PublisherDTO;
+import library.controller.model.BibliographicRecordDTO.ReviewDTO;
 import library.controller.model.BorrowerDTO;
 import library.controller.model.ItemRecordDTO;
-import library.controller.model.LoanDTO;
+import library.controller.model.ItemRecordDTO.LoanDTO;
 import library.dao.ArtistDao;
 import library.dao.BibliographicRecordDao;
 import library.dao.BorrowerDao;
@@ -24,6 +26,7 @@ import library.dao.DesignerDao;
 import library.dao.ItemRecordDao;
 import library.dao.LoanDao;
 import library.dao.PublisherDao;
+import library.dao.ReviewDao;
 import library.entity.Artist;
 import library.entity.BibliographicRecord;
 import library.entity.Borrower;
@@ -32,6 +35,7 @@ import library.entity.Designer;
 import library.entity.ItemRecord;
 import library.entity.Loan;
 import library.entity.Publisher;
+import library.entity.Review;
 
 @Service
 public class LibraryService {
@@ -60,23 +64,45 @@ public class LibraryService {
 	@Autowired
 	private LoanDao loanDao;
 
+	@Autowired
+	private ReviewDao reviewDao;
+
 	/*
 	 * Start of the transactional service methods for the bib records.
 	 */
+
 	@Transactional(readOnly = false)
 	public BibliographicRecordDTO saveBibRecord(BibliographicRecordDTO bibRecordDTO) {
 
 		BibliographicRecord bibRecord = bibRecordDTO.toBibRecord();
+
 		copyEntityFields(bibRecord, bibRecordDTO);
 
 		return new BibliographicRecordDTO(bibRecordDao.save(bibRecord));
 	}
 
-	public Long findBibRecordId(Long bibId) {
+	@Transactional(readOnly = false)
+	public BibliographicRecordDTO updateBibRecord(BibliographicRecordDTO bibRecordDTO) {
+		
+		BibliographicRecord bibRecord = bibRecordDTO.toBibRecord();
+		BibliographicRecord oldRecord = findBibRecordById(bibRecordDTO.getBibId());
+		
+		try {
+			bibRecord = merge(oldRecord, bibRecord);
 
-		BibliographicRecord bibRecord = findBibRecordById(bibId);
-
-		return bibRecord.getBibId();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		bibRecord.setPublishers(oldRecord.getPublishers());
+		bibRecord.setCategories(oldRecord.getCategories());
+		bibRecord.setArtists(oldRecord.getArtists());
+		bibRecord.setDesigners(oldRecord.getDesigners());
+		bibRecord.setItems(oldRecord.getItems());
+		bibRecord.setReviews(oldRecord.getReviews());
+		
+		return new BibliographicRecordDTO(bibRecordDao.save(bibRecord));
 	}
 
 	@Transactional(readOnly = true)
@@ -114,10 +140,20 @@ public class LibraryService {
 	}
 
 	@Transactional(readOnly = false)
-	public ItemRecordDTO saveItemRecord(ItemRecordDTO itemData) {
+	public ItemRecordDTO updateItemRecord(ItemRecordDTO itemData) {
 
-		BibliographicRecord bibRecord = findItemRecordById(itemData.getItemId()).getBibRecord();
+		Long itemId = itemData.getItemId();
+
+		BibliographicRecord bibRecord = findItemRecordById(itemId).getBibRecord();
+		ItemRecord oldItemRecord = findItemRecordById(itemId);
 		ItemRecord itemRecord = itemData.toItemRecord();
+
+		try {
+			itemRecord = merge(oldItemRecord, itemRecord);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		itemRecord.setBibRecord(bibRecord);
 
@@ -146,10 +182,10 @@ public class LibraryService {
 
 	@Transactional(readOnly = false)
 	public void deleteItemRecord(Long itemId) {
-		
+
 		ItemRecord item = findItemRecordById(itemId);
 		BibliographicRecord bibRecord = item.getBibRecord();
-		
+
 		bibRecord.getItems().remove(item);
 
 		itemRecordDao.delete(findItemRecordById(itemId));
@@ -186,56 +222,104 @@ public class LibraryService {
 	}
 
 	/*
-	 * Start of the transactional service methods for the borrower records.
+	 * Start of the transactional service methods for the loans.
 	 */
 
 	@Transactional(readOnly = false)
-	public LoanDTO saveLoanRecord(LoanDTO loanDTO) throws RuntimeException{
+	public LoanDTO saveLoanRecord(Long itemId, Long borrowerId) throws RuntimeException {
 
-		ItemRecord item = findItemRecordById(loanDTO.getItem().getItemId());
-		Borrower borrower = findBorrowerById(loanDTO.getBorrower().getBorrowerId());
+		ItemRecord item = findItemRecordById(itemId);
+		Borrower borrower = findBorrowerById(borrowerId);
 
 		if (item.isAvailable() && borrower.getLoans().size() < borrower.getItemLimit()) {
-			
+
 			Loan loan = new Loan();
 			loan.setBorrower(borrower);
 			loan.setItem(item);
 			loan.setReturnDate(loan.getCheckoutDate().plusDays(item.getCheckoutPeriod()));
 
-			item.setLoanRecord(loan);
+			item.setLoan(loan);
 			item.setAvailable(false);
 			item.incrementCheckouts();
 
 			borrower.getLoans().add(loan);
 
 			return new LoanDTO(loanDao.save(loan));
-			
-		} else if(!item.isAvailable()){
+
+		} else if (!item.isAvailable()) {
 			throw new RuntimeException("Item is unavailable.");
-		} else if(borrower.getLoans().size() >= borrower.getItemLimit()) {
+		} else if (borrower.getLoans().size() >= borrower.getItemLimit()) {
 			throw new RuntimeException("Borrower has reached the borrowing limit.");
 		} else {
 			throw new RuntimeException("Something unexpected occured.");
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public List<LoanDTO> retrieveAllLoansByBorrowerId(Long borrowerId) {
+
+		Borrower borrower = findBorrowerById(borrowerId);
+
+		return borrower.getLoans().stream().map(LoanDTO::new).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public LoanDTO retrieveLoanById(Long loanId) {
+
+		return new LoanDTO(findLoanById(loanId));
+	}
+
 	@Transactional(readOnly = false)
 	public void deleteLoan(Long loanId) {
-		
+
 		Loan loan = findLoanById(loanId);
 		ItemRecord item = findItemRecordById(loan.getItem().getItemId());
 		Borrower borrower = findBorrowerById(loan.getBorrower().getBorrowerId());
-		
-		item.setLoanRecord(null);
+
+		item.setLoan(null);
 		item.setAvailable(true);
-		
+
 		borrower.getLoans().remove(loan);
-		
+
 		loanDao.delete(loan);
 	}
-	
-	
-	
+
+	/*
+	 * Start of the transactional service methods for the reviews.
+	 */
+
+	@Transactional(readOnly = false)
+	public ReviewDTO saveReview(ReviewDTO reviewDTO, Long bibId, Long borrowerId) {
+
+		BibliographicRecord bib = findBibRecordById(bibId);
+		Borrower borrower = findBorrowerById(borrowerId);
+
+		Review review = reviewDTO.toReview();
+		review.setBibRecord(bib);
+		review.setBorrower(borrower);
+
+		bib.getReviews().add(review);
+
+		borrower.getReviews().add(review);
+
+		return new ReviewDTO(reviewDao.save(review));
+	}
+
+	@Transactional(readOnly = true)
+	public List<ReviewDTO> retrieveAllReviewsByBibId(Long bibId) {
+
+		BibliographicRecord bibRecord = findBibRecordById(bibId);
+
+		return bibRecord.getReviews().stream().map(ReviewDTO::new).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ReviewDTO> retrieveAllReviewsByBorrowerId(Long borrowerId) {
+
+		Borrower borrower = findBorrowerById(borrowerId);
+
+		return borrower.getReviews().stream().map(ReviewDTO::new).toList();
+	}
 
 	private void copyEntityFields(BibliographicRecord bibRecord, BibliographicRecordDTO bibRecordDTO) {
 
@@ -335,6 +419,7 @@ public class LibraryService {
 	private ItemRecord findItemRecordById(Long itemId) {
 
 		return itemRecordDao.findById(itemId)
+
 				.orElseThrow(() -> new NoSuchElementException("No such item record with ID=" + itemId + " was found."));
 	}
 
@@ -343,11 +428,33 @@ public class LibraryService {
 		return borrowerDao.findById(borrowerId).orElseThrow(
 				() -> new NoSuchElementException("No such borrower record with ID=" + borrowerId + " was found."));
 	}
-	
+
 	private Loan findLoanById(Long loanId) {
-		
+
 		return loanDao.findById(loanId)
 				.orElseThrow(() -> new NoSuchElementException("No such loan record with ID=" + loanId + " was found."));
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	public <T> T merge(T local, T remote) throws Exception {
+		Class<?> clazz = local.getClass();
+		Object merged = clazz.getDeclaredConstructor().newInstance();
+		for (Field field : clazz.getDeclaredFields()) {
+			field.setAccessible(true);
+			Object localValue = field.get(local);
+			Object remoteValue = field.get(remote);
+			if (localValue != null) {
+				switch (localValue.getClass().getSimpleName()) {
+				case "Default":
+				case "Detail":
+					field.set(merged, this.merge(localValue, remoteValue));
+					break;
+				default:
+					field.set(merged, (Objects.isNull(remoteValue)) ? localValue : remoteValue);
+				}
+			}
+		}
+		return (T) merged;
 	}
 
 }

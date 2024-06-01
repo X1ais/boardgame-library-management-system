@@ -16,7 +16,7 @@ public class LibraryServiceTestSupport {
 	private static final String BIBLIOGRAPHIC_RECORD_TABLE = "bibliographic_record";
 
 	private BibliographicRecordDTO insertBibRecord1 = new BibliographicRecordDTO(
-			1L,
+			15L,
 			"Monopoly",
 			2,
 			4,
@@ -27,7 +27,7 @@ public class LibraryServiceTestSupport {
 			);
 	
 	private BibliographicRecordDTO insertBibRecord2 = new BibliographicRecordDTO(
-			2L,
+			16L,
 			"Chess",
 			2,
 			2,
@@ -38,7 +38,7 @@ public class LibraryServiceTestSupport {
 			);
 	
 	private BibliographicRecordDTO updateBibRecord1 = new BibliographicRecordDTO(
-			1L,
+			15L,
 			"Simpson's Monopoly",
 			2,
 			4,
@@ -67,7 +67,10 @@ public class LibraryServiceTestSupport {
 			);
 	
 	@Autowired
-	private LibraryController libraryController;
+	private BibliographyController bibController;
+	
+	@Autowired
+	private ItemController itemController;
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -89,7 +92,7 @@ public class LibraryServiceTestSupport {
 		BibliographicRecordDTO clone = new BibliographicRecordDTO(bibRecord);
 		
 		clone.setBibId(null);
-		return libraryController.createBibRecord(clone);
+		return bibController.createBibRecord(clone);
 		
 	}
 	
@@ -106,13 +109,13 @@ public class LibraryServiceTestSupport {
 	
 	protected BibliographicRecordDTO getBidRecord(Long bibId) {
 		
-		return libraryController.getBibRecordById(bibId);
+		return bibController.getBibRecordById(bibId);
 		
 	}
 
 	protected BibliographicRecordDTO updateBibRecord(BibliographicRecordDTO bibData) {
 		
-		return libraryController.updateBibRecord(bibData.getBibId(), bibData);
+		return bibController.updateBibRecord(bibData.getBibId(), bibData);
 	
 	}
 
@@ -127,19 +130,19 @@ public class LibraryServiceTestSupport {
 
 	protected List<BibliographicRecordDTO> getAllBibRecords() {
 		
-		return libraryController.getAllBibRecords();
+		return bibController.getAllBibRecords();
 		
 	}
 
 	protected void deleteBibRecord(Long bibId) {
 
-		libraryController.deleteBibRecord(bibId);
+		bibController.deleteBibRecord(bibId);
 		
 	}
 
 	protected ItemRecordDTO insertItemRecord(Long bibId, ItemRecordDTO request) {
 		
-		return libraryController.createItemRecord(bibId, request);
+		return itemController.createItemRecord(bibId, request);
 		
 	}
 	

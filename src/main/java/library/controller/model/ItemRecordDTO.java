@@ -1,6 +1,9 @@
 package library.controller.model;
 
+import java.time.LocalDate;
+
 import library.entity.ItemRecord;
+import library.entity.Loan;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,8 +15,8 @@ public class ItemRecordDTO {
 	private String itemName;
 	private String location;
 	private boolean available;
-	private int checkouts;
-	private int checkoutPeriod;
+	private Integer checkouts;
+	private Integer checkoutPeriod;
 	
 	public ItemRecordDTO(ItemRecord item) {
 		this.itemId = item.getItemId();
@@ -45,6 +48,33 @@ public class ItemRecordDTO {
 		item.setCheckoutPeriod(checkoutPeriod);
 		
 		return item;
+	}
+	
+	@Data
+	@NoArgsConstructor
+	public static class LoanDTO {
+
+		private Long loanId;
+		private LocalDate checkoutDate;
+		private LocalDate returnDate;
+		
+		public LoanDTO(Loan loan) {
+			
+			this.loanId = loan.getLoanId();
+			this.checkoutDate = loan.getCheckoutDate();
+			this.returnDate = loan.getReturnDate();
+		}
+
+//		public Loan toLoan() {
+//			
+//			Loan loan = new Loan();
+//			
+//			loan.setLoanId(loanId);
+//			loan.setCheckoutDate(checkoutDate);
+//			loan.setReturnDate(returnDate);
+//			
+//			return loan;
+//		}
 	}
 
 }

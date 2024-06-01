@@ -23,8 +23,8 @@ public class ItemRecord {
 	private String itemName;
 	private String location;
 	private boolean available;
-	private int checkouts;
-	private int checkoutPeriod;
+	private Integer checkouts=0;
+	private Integer checkoutPeriod;
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
@@ -35,7 +35,7 @@ public class ItemRecord {
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
-	private Loan loanRecord;
+	private Loan loan;
 	
 	public void incrementCheckouts() {
 		checkouts += 1;

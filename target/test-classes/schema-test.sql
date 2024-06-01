@@ -20,7 +20,7 @@ CREATE TABLE  bibliographic_record (
 	max_num_of_players INT,
 	min_age INT,
 	playtime INT,
-	complexity DECIMAL(3,2),
+	complexity DECIMAL,
 	edition VARCHAR(63),
 	PRIMARY KEY (bib_id)
 );

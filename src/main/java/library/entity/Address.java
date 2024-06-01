@@ -1,9 +1,12 @@
 package library.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -19,5 +22,9 @@ public class Address {
 	private String city;
 	private String state;
 	private int zip;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "borrower_id")
+	private Borrower borrower;
 
 }

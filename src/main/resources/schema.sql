@@ -7,9 +7,9 @@ DROP TABLE IF EXISTS designer;
 DROP TABLE IF EXISTS artist;
 DROP TABLE IF EXISTS loan;
 DROP TABLE IF EXISTS review;
-DROP TABLE IF EXISTS borrower;
 DROP TABLE IF EXISTS item_record;
 DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS borrower;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS bibliographic_record;
 
@@ -20,7 +20,7 @@ CREATE TABLE  bibliographic_record (
 	max_num_of_players INT,
 	min_age INT,
 	playtime INT,
-	complexity DECIMAL,
+	complexity DECIMAL(3,2),
 	edition VARCHAR(63),
 	PRIMARY KEY (bib_id)
 );
@@ -31,14 +31,25 @@ CREATE TABLE category (
 	PRIMARY KEY (category_id)
 );
 
+CREATE TABLE borrower (
+	borrower_id INT NOT NULL AUTO_INCREMENT,
+	first_name VARCHAR(127),
+	last_name VARCHAR(127),
+	phone VARCHAR(64),
+	item_limit INT,
+	PRIMARY KEY (borrower_id)
+);
+
 CREATE TABLE address (
 	address_id INT NOT NULL AUTO_INCREMENT,
+	borrower_id INT NOT NULL,
 	street_address VARCHAR(255),
 	street_address2 VARCHAR(255),
 	city VARCHAR(127),
 	state VARCHAR(63),
 	zip INT,
-	PRIMARY KEY (address_id)
+	PRIMARY KEY (address_id),
+	FOREIGN KEY (borrower_id) REFERENCES borrower (borrower_id) ON DELETE CASCADE
 );
 
 CREATE TABLE item_record (
@@ -50,18 +61,7 @@ CREATE TABLE item_record (
 	checkouts INT,
 	checkout_period INT,
 	PRIMARY KEY (item_id),
-	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id) ON DELETE CASCADE,
-);
-
-CREATE TABLE borrower (
-	borrower_id INT NOT NULL AUTO_INCREMENT,
-	address_id INT,
-	first_name VARCHAR(127),
-	last_name VARCHAR(127),
-	phone VARCHAR(64),
-	item_limit INT,
-	PRIMARY KEY (borrower_id),
-	FOREIGN KEY (address_id) REFERENCES address (address_id)
+	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id) ON DELETE CASCADE
 );
 
 CREATE TABLE review (
@@ -71,7 +71,7 @@ CREATE TABLE review (
 	rating INT,
 	review_body VARCHAR(1000),
 	PRIMARY KEY (review_id),
-	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id),
+	FOREIGN KEY (bib_id) REFERENCES bibliographic_record (bib_id) ON DELETE CASCADE,
 	FOREIGN KEY (borrower_id) REFERENCES borrower (borrower_id)
 );
 
@@ -102,10 +102,8 @@ CREATE TABLE designer (
 
 CREATE TABLE publisher (
 	publisher_id INT NOT NULL AUTO_INCREMENT,
-	address_id INT,
 	publisher_name VARCHAR(127),
-	PRIMARY KEY (publisher_id),
-	FOREIGN KEY (address_id) REFERENCES address (address_id)
+	PRIMARY KEY (publisher_id)
 );
 
 CREATE TABLE bibliographic_record_category (

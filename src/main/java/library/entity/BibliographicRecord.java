@@ -28,16 +28,16 @@ public class BibliographicRecord {
 	private Long bibId;
 	
 	private String bibName;
-	private int minNumOfPlayers;
-	private int maxNumOfPlayers;
-	private int minAge;
-	private int playtime;
+	private Integer minNumOfPlayers;
+	private Integer maxNumOfPlayers;
+	private Integer minAge;
+	private Integer playtime;
 	private BigDecimal complexity;
 	private String edition;
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany()
 	@JoinTable(name = "bibliographic_record_publisher",
 	joinColumns = @JoinColumn(name = "bib_id"),
 	inverseJoinColumns = @JoinColumn(name = "publisher_id"))
@@ -45,7 +45,7 @@ public class BibliographicRecord {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany()
 	@JoinTable(name = "bibliographic_record_category",
 		joinColumns = @JoinColumn(name = "bib_id"),
 		inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -53,7 +53,7 @@ public class BibliographicRecord {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany()
 	@JoinTable(name = "bibliographic_record_designer",
 		joinColumns = @JoinColumn(name = "bib_id"),
 		inverseJoinColumns = @JoinColumn(name = "designer_id"))
@@ -61,7 +61,7 @@ public class BibliographicRecord {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany()
 	@JoinTable(name = "bibliographic_record_artist",
 		joinColumns = @JoinColumn(name = "bib_id"),
 		inverseJoinColumns = @JoinColumn(name = "artist_id"))
@@ -76,7 +76,7 @@ public class BibliographicRecord {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "bibRecord", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "bibRecord")
 	private Set<ItemRecord> items = new HashSet<>();
 
 }

@@ -8,9 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,13 +26,9 @@ public class Borrower {
 	private String phone;
 	private int itemLimit;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id")
-	private Address address;
-	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "borrower", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "borrower", cascade = CascadeType.ALL)
 	private Set<Loan> loans = new HashSet<>();
 	
 	@EqualsAndHashCode.Exclude
