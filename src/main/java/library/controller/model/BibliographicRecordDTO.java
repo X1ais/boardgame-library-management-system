@@ -84,29 +84,29 @@ public class BibliographicRecordDTO {
 		bibRecord.setComplexity(complexity);
 		bibRecord.setEdition(edition);
 		
-		for(PublisherDTO pub : publishers) {
-			bibRecord.getPublishers().add(pub.toPublisher());
-		}
-		
-		for(CategoryDTO cat : categories) {
-			bibRecord.getCategories().add(cat.toCategory());
-		}
-		
-		for (DesignerDTO designer : designers) {
-			bibRecord.getDesigners().add(designer.toDesigner());
-		}
-		
-		for (ArtistDTO artist : artists) {
-			bibRecord.getArtists().add(artist.toArtist());
-		}
-		
-		for (ItemRecordDTO item : items) {
-			bibRecord.getItems().add(item.toItemRecord());
-		}
-		
-		for(ReviewDTO review : reviews) {
-			bibRecord.getReviews().add(review.toReview());
-		}
+//		for(PublisherDTO pub : publishers) {
+//			bibRecord.getPublishers().add(pub.toPublisher());
+//		}
+//		
+//		for(CategoryDTO cat : categories) {
+//			bibRecord.getCategories().add(cat.toCategory());
+//		}
+//		
+//		for (DesignerDTO designer : designers) {
+//			bibRecord.getDesigners().add(designer.toDesigner());
+//		}
+//		
+//		for (ArtistDTO artist : artists) {
+//			bibRecord.getArtists().add(artist.toArtist());
+//		}
+//		
+//		for (ItemRecordDTO item : items) {
+//			bibRecord.getItems().add(item.toItemRecord());
+//		}
+//		
+//		for(ReviewDTO review : reviews) {
+//			bibRecord.getReviews().add(review.toReview());
+//		}
 		
 		return bibRecord;
 	}

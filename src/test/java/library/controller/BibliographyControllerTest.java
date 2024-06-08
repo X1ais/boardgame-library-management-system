@@ -44,6 +44,7 @@ class BibliographyControllerTest extends LibraryServiceTestSupport {
 	void testUpdateBibRecord() {
 		
 		// Given: a bib record and an update request
+		insertBibRecord(buildInsertBibRecord(1));
 		BibliographicRecordDTO expected = buildUpdateBibRecord();
 		
 		// When: the bib record is updated
@@ -61,6 +62,7 @@ class BibliographyControllerTest extends LibraryServiceTestSupport {
 	void testGetBibRecord() {
 		
 		// Given: a bib record ID
+		insertBibRecord(buildInsertBibRecord(1));
 		BibliographicRecordDTO bib = buildInsertBibRecord(1);
 		BibliographicRecordDTO expected = buildInsertBibRecord(1);
 		

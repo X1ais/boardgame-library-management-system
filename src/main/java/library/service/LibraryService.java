@@ -2,10 +2,12 @@ package library.service;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -285,6 +287,8 @@ public class LibraryService {
 	}
 
 	/*
+	 * 
+	 * 
 	 * Start of the transactional service methods for the reviews.
 	 */
 
@@ -320,6 +324,23 @@ public class LibraryService {
 
 		return borrower.getReviews().stream().map(ReviewDTO::new).toList();
 	}
+
+	/*
+	 * 
+	 * 
+	 * Start of the transactional service methods for the designers.
+	 */
+
+	public DesignerDTO saveDesigner(DesignerDTO designerDTO) {
+
+		Designer designer = designerDTO.toDesigner();
+		
+		return new DesignerDTO(designerDao.save(designer));
+	}
+	
+	
+	
+	
 
 	private void copyEntityFields(BibliographicRecord bibRecord, BibliographicRecordDTO bibRecordDTO) {
 
@@ -455,6 +476,17 @@ public class LibraryService {
 			}
 		}
 		return (T) merged;
+	}
+
+	public BibliographicRecordDTO updateBibRecordByField(Long bibId, Map<String, Object> fields) {
+		BibliographicRecord existingBibRecord = findBibRecordById(bibId);
+		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findRequiredField(BibliographicRecord.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingBibRecord, value);
+		});
+		return new BibliographicRecordDTO(bibRecordDao.save(existingBibRecord));
 	}
 
 }

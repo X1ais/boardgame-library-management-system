@@ -1,11 +1,13 @@
 package library.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,8 +18,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import library.controller.model.BibliographicRecordDTO;
-import library.controller.model.ItemRecordDTO;
+import library.controller.model.BibliographicRecordDTO.DesignerDTO;
 import library.controller.model.BibliographicRecordDTO.ReviewDTO;
+import library.controller.model.ItemRecordDTO;
 import library.service.LibraryService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,6 +75,14 @@ public class BibliographyController {
 		
 	}
 	
+	@PatchMapping("/{bibId}")
+	public BibliographicRecordDTO patchBibRecord(@PathVariable Long bibId, @RequestBody Map<String, Object> fields) {
+
+		log.info("Patching bib record with ID={}.", bibId);
+		
+		return libraryService.updateBibRecordByField(bibId, fields);
+	}
+	
 	@DeleteMapping("/{bibId}")
 	public String deleteBibRecord(@PathVariable Long bibId) {
 		
@@ -115,6 +126,19 @@ public class BibliographyController {
 		log.info("Fetching reviews attached to Bib Record with ID={}", bibId);
 		
 		return libraryService.retrieveAllReviewsByBibId(bibId);
-	}	
+	}
+	
+	/*
+	 * HTTP requests for Designers
+	 */
+	
+	@PostMapping("/designer")
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public DesignerDTO createDesigner(@RequestBody DesignerDTO designerDTO) {
+		
+		log.info("Creating a record for a designer.");
+		
+		return libraryService.saveDesigner(designerDTO);
+	}
 	
 }
